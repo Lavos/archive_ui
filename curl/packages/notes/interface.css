@@ -1,0 +1,85 @@
+/* Universal */
+
+@font-face {
+    font-family: 'profont';
+    src: url('profont.eot');
+    src: url('profont.eot?#iefix') format('embedded-opentype'),
+         url('profont.woff') format('woff'),
+         url('profont.ttf') format('truetype'),
+         url('profont.svg#profontwindowsregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'inconsolata';
+    src: url('inconsolata.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.notes_interface { }
+	.notes_interface menu { position: absolute; top: 0; left: 0; height: 32px; width: 100%; margin: 0; padding: 0; background-color: #333; }
+
+	.notes_interface .icon { height: 32px; width: 32px; }
+
+	.notes_interface p { margin: 0; }
+
+	.notes_interface,
+	.notes_interface input,
+	.notes_interface button,
+	.notes_interface textarea { font-family: inconsolata, monospace; }
+
+	.notes_interface input,
+	.notes_interface button,
+	.notes_interface textarea { padding: 3px; font-size: 13px; }
+
+	.notes_interface textarea { box-sizing: border-box; width: 100%; }
+
+	.notes_interface .pane { box-sizing: border-box; padding: 3px; }
+
+	.notes_interface nav.list { position: absolute; top: 0; bottom: 0; background-color: #ccc; overflow: auto; }
+		.notes_interface nav.list input.search { box-sizing: border-box; width: 100%; }
+		.notes_interface nav.list article { background-color: rgba(255, 255, 255, .2); cursor: pointer; margin: 0 0 1px 0; }
+		.notes_interface nav.list article:hover { background-color: rgba(255, 255, 255, .4); }
+			.notes_interface nav.list article h3 { font-size: 14px; font-weight: normal; margin: 0; padding: 3px; }
+
+	.notes_interface section.editor { position: absolute; top: 32px; bottom: 0; width: 100%; }
+		.notes_interface section.editor header { position: absolute; top: 0; left: 0; }
+		.notes_interface section.editor article { position: absolute; top: 115px; left: 0; right: 0; bottom: 0; }
+
+		.notes_interface section.editor textarea { height: 100%; margin: 0; display: block; resize: none; }
+
+@media screen and (max-width: 640px) { /* Phones */
+	html,
+	body { height: 100%; width: 100%; overflow: hidden; position: relative; padding: 0; margin: 0; }
+
+	.notes_interface .pane { -webkit-transition: left .350s; }
+
+	.notes_interface nav.list { left: -100%; width: 90%; } 
+	.notes_interface section.editor { left: 0; }
+
+	html.menu_open .notes_interface nav.list { left: 0; }
+	html.menu_open .notes_interface section.editor,
+	html.menu_open .notes_interface menu { left: 90%; }
+}
+
+@media screen and (max-width: 999px) { /* Phones and Tablets */
+
+
+}
+
+@media screen and (min-width: 640px) and (max-width: 999px) { /* just Tablets */
+
+
+}
+
+@media screen and (min-width: 640px) { /* Tablet and above */
+	.notes_interface nav.list { width: 200px; left: 0; }
+	.notes_interface section.editor { left: 206px; right: 0; }
+}
+
+@media screen and (min-width: 1000px) { /* Full */
+
+
+}	
