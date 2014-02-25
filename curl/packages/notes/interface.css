@@ -1,17 +1,6 @@
 /* Universal */
 
 @font-face {
-    font-family: 'profont';
-    src: url('profont.eot');
-    src: url('profont.eot?#iefix') format('embedded-opentype'),
-         url('profont.woff') format('woff'),
-         url('profont.ttf') format('truetype'),
-         url('profont.svg#profontwindowsregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
     font-family: 'inconsolata';
     src: url('inconsolata.otf');
     font-weight: normal;
@@ -19,8 +8,6 @@
 }
 
 .notes_interface { }
-	.notes_interface menu { position: absolute; top: 0; left: 0; height: 32px; width: 100%; margin: 0; padding: 0; background-color: #333; }
-
 	.notes_interface .icon { height: 32px; width: 32px; }
 
 	.notes_interface p { margin: 0; }
@@ -34,21 +21,30 @@
 	.notes_interface button,
 	.notes_interface textarea { padding: 3px; font-size: 13px; }
 
-	.notes_interface textarea { box-sizing: border-box; width: 100%; }
+	.notes_interface input,
+	.notes_interface textarea { box-sizing: border-box; width: 100%; outline: none; }
 
-	.notes_interface .pane { box-sizing: border-box; padding: 3px; }
+	.notes_interface textarea { border: 0; padding: 8px 10px; line-height: 1.3em; }
 
-	.notes_interface nav.list { position: absolute; top: 0; bottom: 0; background-color: #ccc; overflow: auto; }
+	.notes_interface .pane { box-sizing: border-box; }
+
+	.notes_interface .inset { border: 0; background-color: rgba(255, 255, 255, .08); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .34); border: 1px solid rgba(255, 255, 255, .15); }
+
+	.notes_interface nav.list { z-index: 4; position: absolute; top: 0; bottom: 0; background-color: #7d9576; overflow: auto; padding: 3px; box-shadow: 0 0 10px rgba(0, 0, 0, .4); }
 		.notes_interface nav.list input.search { box-sizing: border-box; width: 100%; }
 		.notes_interface nav.list article { background-color: rgba(255, 255, 255, .2); cursor: pointer; margin: 0 0 1px 0; }
 		.notes_interface nav.list article:hover { background-color: rgba(255, 255, 255, .4); }
 			.notes_interface nav.list article h3 { font-size: 14px; font-weight: normal; margin: 0; padding: 3px; }
 
-	.notes_interface section.editor { position: absolute; top: 32px; bottom: 0; width: 100%; }
-		.notes_interface section.editor header { position: absolute; top: 0; left: 0; }
-		.notes_interface section.editor article { position: absolute; top: 115px; left: 0; right: 0; bottom: 0; }
+	.notes_interface section.editor { position: absolute; top: 32px; bottom: 0; }
+		.notes_interface section.editor header { padding: 10px; height: 50px; background-color: #3b3b3b; }
+			.notes_interface section.editor header input.title { height: 40px; line-height: 32px; font-size: 22px; color: white; text-shadow: 0 2px 1px rgba(0, 0, 0, .15); padding: 0 10px; }
+		.notes_interface section.editor article { position: absolute; top: 55px; left: 0; right: 0; bottom: 0; background-color: #3b3b3b; }
+			.notes_interface section.editor textarea { height: 100%; margin: 0; display: block; resize: none; border: 0; color: #d1d1d1; text-shadow: 0 2px 0 rgba(0, 0, 0, .15); background-color: transparent; }
 
-		.notes_interface section.editor textarea { height: 100%; margin: 0; display: block; resize: none; }
+	.notes_interface menu { z-index: 3; background-color: #593e3e; background-image: -webkit-linear-gradient(top, transparent 0%, transparent 90%, rgba(0, 0, 0, .1) 90%, rgba(0, 0, 0, .1) 100%); box-shadow: 0 2px 3px rgba(0, 0, 0, .4); position: absolute; top: 0; left: 0; height: 32px; margin: 0; padding: 0; }
+		.notes_interface menu > .left { float: left; }
+		.notes_interface menu > .right { float: right; }
 
 @media screen and (max-width: 640px) { /* Phones */
 	html,
@@ -57,11 +53,11 @@
 	.notes_interface .pane { -webkit-transition: left .350s; }
 
 	.notes_interface nav.list { left: -100%; width: 90%; } 
-	.notes_interface section.editor { left: 0; }
+	.notes_interface section.editor { left: 0; width: 100%; }
 
 	html.menu_open .notes_interface nav.list { left: 0; }
 	html.menu_open .notes_interface section.editor,
-	html.menu_open .notes_interface menu { left: 90%; }
+	html.menu_open .notes_interface menu { left: 90%; width: 100%; }
 }
 
 @media screen and (max-width: 999px) { /* Phones and Tablets */
@@ -76,7 +72,8 @@
 
 @media screen and (min-width: 640px) { /* Tablet and above */
 	.notes_interface nav.list { width: 200px; left: 0; }
-	.notes_interface section.editor { left: 206px; right: 0; }
+	.notes_interface section.editor { left: 200px; right: 0; }
+	.notes_interface menu { left: 200px; right: 0; }
 }
 
 @media screen and (min-width: 1000px) { /* Full */
