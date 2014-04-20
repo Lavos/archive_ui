@@ -191,6 +191,8 @@ define([
 		title_handler: function (model, changes) {
 			var self = this;
 
+			console.log(changes);
+
 			if (changes.title) {
 				if (this.title_timer) {
 					clearTimeout(this.title_timer);
@@ -334,7 +336,10 @@ define([
 			
 			var revs = this.context.get('revision_refs'), counter = revs.length;
 			var last = revs[revs.length-1];
-			this.editor.display_revision(last);
+
+			if (last) {
+				this.editor.display_revision(last);
+			};
 
 			this.update_revisions();
 		},
