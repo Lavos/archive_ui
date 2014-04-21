@@ -124,6 +124,7 @@ define([
 				e.preventDefault();
 
 				if (this.selectedIndex !== null) {
+					this.fire('leave');
 					return;
 				};
 
@@ -199,13 +200,7 @@ define([
 		},
 
 		setHighlight: function(highlight){
-			console.log(highlight);
-
-			if (highlight) {
-				this.$element.addClass('highlight');
-			} else {
-				this.$element.removeClass('highlight');
-			};
+			this.$element[highlight ? 'addClass' : 'removeClass']('highlight');
 		},
 
 		select: function(){
@@ -307,29 +302,21 @@ define([
 
 		save: function(){
 			var self = this;
-			var queue = new __.Queue();
 
-
-			queue.add(function(){
-				$.ajax({
-					type: 'POST',
-					url: '/api/' + self.model.get('hex'),
-					dataType: 'text',
-					processData: false,
-					data: self.$textarea.val(),
-					contentType: 'application/json',
-					success: function (data) {
-						var revs = self.model.get('revision_refs').slice();
-						revs.push(data);
-						self.model.set('revision_refs', revs);
-
-						self.fire('save', data);
-						queue.step();
-					},
-				});
+			$.ajax({
+				type: 'POST',
+				url: '/api/' + self.model.get('hex'),
+				dataType: 'text',
+				processData: false,
+				data: self.$textarea.val(),
+				contentType: 'application/json',
+				success: function (data) {
+					var revs = self.model.get('revision_refs').slice();
+					revs.push(data);
+					self.model.set('revision_refs', revs);
+					self.fire('save', data);
+				},
 			});
-
-			queue.step();
 		}
 	});
 
@@ -341,6 +328,7 @@ define([
 
 		// this.list.on('select', this.watch, this);
 		this.list.on('select', this.editor.edit, this.editor);
+		this.list.on('leave', this.editor.edit, this.editor);
 
 		// this.editor.on('save', this.update_revisions, this);
 
