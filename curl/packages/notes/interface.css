@@ -7,42 +7,41 @@
     font-style: normal;
 }
 
-.notes_interface { }
+html, body { margin: 0; padding: 0; }
+
+.notes_interface { font-family: Arial, Helvetica, sans-serif; }
 	.notes_interface .icon { height: 32px; width: 32px; }
 
 	.notes_interface p { margin: 0; }
 
-	.notes_interface,
-	.notes_interface input,
-	.notes_interface button,
-	.notes_interface textarea { font-family: inconsolata, monospace; }
 
 	.notes_interface input,
 	.notes_interface button,
 	.notes_interface textarea { padding: 3px; font-size: 13px; }
 
 	.notes_interface input,
-	.notes_interface textarea { box-sizing: border-box; width: 100%; outline: none; }
+	.notes_interface textarea { box-sizing: border-box; outline: none; }
 
-	.notes_interface textarea { padding: 8px 10px; line-height: 1.3em; }
+	.notes_interface textarea { padding: 8px 10px; line-height: 1.3em; font-family: inconsolata, monospace; }
 
 	.notes_interface .pane { box-sizing: border-box; }
 
-	.notes_interface nav.list { z-index: 4; position: absolute; top: 0; bottom: 0; background-color: #ccc; overflow: auto; padding: 3px; box-shadow: 0 0 10px rgba(0, 0, 0, .4); border-right: 1px solid #ddd; }
-		.notes_interface nav.list input.search { box-sizing: border-box; width: 100%; }
-		.notes_interface nav.list article { background-color: rgba(255, 255, 255, .2); cursor: pointer; margin: 0 0 1px 0; }
-		.notes_interface nav.list article:hover { background-color: rgba(255, 255, 255, .4); }
-			.notes_interface nav.list article h3 { font-size: 14px; font-weight: normal; margin: 0; padding: 3px; }
 
-	.notes_interface section.editor { position: absolute; top: 32px; bottom: 0; }
-		.notes_interface section.editor header { padding: 12px 10px 10px; background-color: #efefef; }
-			.notes_interface section.editor header input.title { height: 40px; font-size: 22px; color: #333; text-shadow: 1px 1px 1px rgba(0, 0, 0, .25); padding: 0 10px; }
-		.notes_interface section.editor article { position: absolute; top: 55px; left: 0; right: 0; bottom: 0; background-color: #efefef; }
-			.notes_interface section.editor textarea { height: 100%; margin: 0; display: block; resize: none; color: #333; border: 0; text-shadow: 0 1px 0 rgba(0, 0, 0, .15); background-color: transparent; }
+	.notes_interface nav.list { }
+		.notes_interface nav.list .searchbox { position: absolute; top: 0; right: 0; left: 0; height: 35px; background-color: #efefef; border-bottom: 1px solid #ddd; }
+			.notes_interface nav.list .inset { position: absolute; top: 5px; right: 5px; left: 5px; bottom: 5px; }
+				.notes_interface nav.list input.search { width: 100%; margin: 0; display: block; position: absolute; box-sizing: border-box; top: 0; right: 0; bottom: 0; left: 0; }
 
-	.notes_interface menu { z-index: 3; background-color: #555; background-image: -webkit-linear-gradient(top, transparent 0%, transparent 90%, rgba(0, 0, 0, .1) 90%, rgba(0, 0, 0, .1) 100%); box-shadow: 0 2px 3px rgba(0, 0, 0, .4); position: absolute; top: 0; left: 0; height: 32px; margin: 0; padding: 0; }
-		.notes_interface menu > .left { float: left; padding: 3px; }
-		.notes_interface menu > .right { float: right; padding: 3px;  }
+		.notes_interface nav.list .listbox { z-index: 4; position: absolute; top: 36px; bottom: 0; background-color: #f1f1f1; border-right: 1px solid #ddd; overflow: auto; }
+			.notes_interface nav.list article { background-color: rgba(255, 255, 255, .2); cursor: pointer; border-bottom: 1px solid #ddd; }
+			.notes_interface nav.list article:nth-child(even) { background-color: rgba(255, 255, 255, 1); }
+			.notes_interface nav.list article:hover { background-color: rgba(255, 255, 0, .2); }
+			.notes_interface nav.list article.highlight { background-color: rgba(0, 0, 255, .4); }
+				.notes_interface nav.list article h3 { font-size: 12px; font-weight: bold; margin: 0; padding: 3px 7px; }
+
+
+	.notes_interface section.editor { position: absolute; bottom: 0; }
+		.notes_interface #editor { position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: 0; display: block; width: 100%; resize: none; color: black; border: 0; background-color: #f1f1f1; }
 
 @media screen and (max-width: 640px) { /* Phones */
 	html,
@@ -70,10 +69,8 @@
 }
 
 @media screen and (min-width: 640px) { /* Tablet and above */
-	.notes_interface nav.list { width: 200px; left: 0; }
-	.notes_interface section.editor { left: 200px; right: 0; }
-	.notes_interface menu { left: 200px; right: 0; }
-	.notes_interface menu .left { display: none; }
+	.notes_interface nav.list .listbox { width: 200px; left: 0; }
+	.notes_interface section.editor { left: 205px; right: 0; top: 36px; border-left: 1px solid #ddd; }
 }
 
 @media screen and (min-width: 1000px) { /* Full */

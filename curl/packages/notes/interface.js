@@ -25,6 +25,9 @@ define([
 		self.collection = new Notes();
 		self.collection.on('change', self.render, self);
 
+		self.items = [];
+		self.selectedIndex = null;
+
 		self.element.innerHTML = list_template_string;
 		self.target = self.$element.find('.item_target')[0];
 		self.$search = self.$element.find('.search');
@@ -42,7 +45,7 @@ define([
 
 		events: [
 			{ event_name: 'input', selector: '.search', function_name: 'search' },
-			{ event_name: 'click', selector: '[data-action="new"]', function_name: 'make' }
+			{ event_name: 'keydown', selector: '.search', function_name: 'key_handler' }
 		],
 
 		close_menu: function(){
@@ -50,6 +53,9 @@ define([
 		},
 
 		render: function(){
+			this.items = [];
+			this.selectedIndex = null;
+
 			var frag = document.createDocumentFragment();
 			var counter = 0, limit = this.collection.length;
 			while (counter < limit) {
@@ -57,6 +63,7 @@ define([
 				frag.appendChild(item.element);
 
 				item.on('select', this.select, this);
+				this.items.push(item);
 				counter++;
 			};
 
@@ -68,39 +75,109 @@ define([
 			var self = this;
 			var q = this.$search.val();
 	
+			var success = function (data) {
+				self.collection.removeAll();
+
+				var counter = 0, limit = data.length;
+				while (counter < limit) {
+					var note = new Note();
+					note.ingest(data[counter]);
+					self.collection.push(note);
+					counter++;
+				};
+			
+			};
+
 			if (q) {
 				$.ajax({
 					type: 'GET',
 					url: '/api/search',
 					dataType: 'json',
 					data: { q: q },
-					success: function (data) {
-						self.collection.removeAll();
-
-						var counter = 0, limit = data.length;
-						while (counter < limit) {
-							var note = new Note();
-							note.ingest(data[counter]);
-							self.collection.push(note);
-							counter++;
-						};
-					
-					}
+					success: success
 				});
 			} else {
-				self.collection.removeAll();
+				$.ajax({
+					type: 'GET',
+					url: '/api/list',
+					dataType: 'json',
+					success: success
+				});
 			};
 		},
 
+		key_handler: function(e) {
+			console.log(e.which);
+
+			switch (e.which) {
+			case 38: // up
+				e.preventDefault();
+				this.moveSelection(false);
+			break;
+
+			case 40: // down
+				e.preventDefault();
+				this.moveSelection(true);
+			break;
+
+			case 13: // enter
+				e.preventDefault();
+
+				if (this.selectedIndex !== null) {
+					return;
+				};
+
+				this.make();
+			};
+		},
+
+		moveSelection: function(positive) {
+			if (this.selectedIndex === null) {
+				this.selectedIndex = 0;
+				this.items[this.selectedIndex].select();
+				return;
+			};
+
+			var new_index = this.selectedIndex + (positive ? 1 : -1);
+
+			if (new_index < 0) {
+				new_index = this.items.length-1;
+			};
+
+			new_index = new_index % this.items.length;
+			this.items[new_index].select();
+		},
+
 		make: function(){
+			var self = this;
+
 			var n = new Note();
 			n.set('title', this.$search.val());
 
-			this.fire('select', n);
-			this.close_menu();
+			$.ajax({
+				type: 'POST',
+				url: '/api/new',
+				dataType: 'text',
+				processData: false,
+				data: JSON.stringify({ title: n.get('title') }),
+				contentType: 'application/json',
+				success: function(hex){
+					n.set('hex', hex);
+					self.collection.push(n);
+					self.items[0].select();
+				}
+			});
 		},
 
 		select: function(item, model){
+			if (this.selectedIndex !== null) {
+				this.items[this.selectedIndex].setHighlight(false);
+			};
+
+			item.setHighlight(true);
+			this.selectedIndex = this.items.indexOf(item);
+
+			this.$search.val(model.get('title'));
 			this.fire('select', model);
 		}		
 	});
@@ -121,58 +198,52 @@ define([
 			this.element.innerHTML = this.comp_template(this.model.data);
 		},
 
+		setHighlight: function(highlight){
+			console.log(highlight);
+
+			if (highlight) {
+				this.$element.addClass('highlight');
+			} else {
+				this.$element.removeClass('highlight');
+			};
+		},
+
 		select: function(){
-			$('html').removeClass('menu_open');
 			this.fire('select', this.model);
 		}
 	});
 
+
 	var Editor = Blocks.View.inherits(function(){
 		this.model = new Note();
 
-		this.element.innerHTML = this.comp_template(this.model);
-		this.$textarea = this.$element.find('textarea.content');
-		this.$title = this.$element.find('input.title');
+		this.textarea = document.createElement('textarea');
+		this.element.appendChild(this.textarea);
+		this.textarea.id = 'editor';
+		this.$textarea = $(this.textarea);
+
 		this.$info = this.$element.find('span.info');
 
 		this.render();
 	}, {
-		title_timer: null,
 		content_timer: null,
 		tag_name: 'section',
 		element_classes: 'editor pane',
 		comp_template: __.template(editor_template_string),
 
 		events: [
-			{ event_name: 'input', selector: 'textarea.content', function_name: 'content_handler' },
-			{ event_name: 'input', selector: 'input.title', function_name: 'update' }
+			{ event_name: 'input', selector: 'textarea', function_name: 'content_handler' },
 		],
 
 		clear: function(){
-			if (this.title_timer) {
-				clearTimeout(this.title_timer);
-				this.title_timer = null;
-				this.patch();
-			};
-
 			if (this.content_timer) {
 				clearTimeout(this.content_timer);
 				this.content_timer = null;
 				this.save();
 			};
 
-			this.$title.val('');
 			this.$info.html('');
 			this.$textarea.val('');
-		},
-
-		update: function(){
-			this.model.set('title', this.$title.val());
-		},
-
-		render: function(){
-			this.$title.val(this.model.get('title'));
-			this.$info.html(this.model.get('hex').substr(0, 7));
 		},
 
 		display_revision: function (hex) {
@@ -186,23 +257,6 @@ define([
 					self.$textarea.val(data);
 				},
 			});
-		},
-
-		title_handler: function (model, changes) {
-			var self = this;
-
-			console.log(changes);
-
-			if (changes.title) {
-				if (this.title_timer) {
-					clearTimeout(this.title_timer);
-				};
-
-				this.title_timer = setTimeout(function(){
-					self.title_timer = null;
-					self.patch();
-				}, 2000);
-			};
 		},
 
 		content_handler: function () {
@@ -222,14 +276,13 @@ define([
 		edit: function(item, model){
 			this.clear();
 
-			if (this.model) {
-				this.model.off('changes', this.title_handler);
-			};
-
 			this.model = model;
-			this.model.on('changes', this.title_handler, this);
 
-			this.render();
+			var ref = this.model.get('revision_refs') || [];
+
+			if (ref.length) {
+				this.display_revision(ref[ref.length-1]);
+			};
 		},
 
 		patch: function(){
@@ -256,27 +309,6 @@ define([
 			var self = this;
 			var queue = new __.Queue();
 
-			// check if new note
-			if (this.model.get('hex') === '') {
-				self.model.set('title', self.$title.val());
-
-				queue.add(function(){
-					$.ajax({
-						type: 'POST',
-						url: '/api/new',
-						dataType: 'text',
-						processData: false,
-						data: JSON.stringify({ title: self.model.get('title') }),
-						contentType: 'application/json',
-						success: function(hex){
-							self.model.set('hex', hex);
-							queue.step();
-						}
-					});
-				});
-			} else if (this.model.get('title') === '') {
-				return;
-			};
 
 			queue.add(function(){
 				$.ajax({
@@ -307,7 +339,7 @@ define([
 		this.editor = new Editor();
 		this.list = new List();
 
-		this.list.on('select', this.watch, this);
+		// this.list.on('select', this.watch, this);
 		this.list.on('select', this.editor.edit, this.editor);
 
 		// this.editor.on('save', this.update_revisions, this);
