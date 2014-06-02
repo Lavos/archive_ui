@@ -26,22 +26,30 @@ html, body { margin: 0; padding: 0; }
 
 	.notes_interface .pane { box-sizing: border-box; }
 
+	.notes_interface .darkgrad { background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, .15)); }
 
 	.notes_interface nav.list { }
-		.notes_interface nav.list .searchbox { position: absolute; top: 0; right: 0; left: 0; height: 35px; background-color: #dedede; background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, .1)); border-bottom: 1px solid #aaa; }
+			.notes_interface nav.list .sidebar { position: absolute; top: 0; bottom: 0; border-right: 1px solid #ddd; }
+		.notes_interface nav.list .searchbox { position: absolute; top: 0; right: 0; left: 0; height: 35px; border-bottom: 1px solid #aaa; z-index: 5; background-color: #dedede; }
 			.notes_interface nav.list .inset { position: absolute; top: 5px; right: 5px; left: 5px; bottom: 5px; }
 				.notes_interface nav.list input.search { width: 100%; margin: 0; display: block; position: absolute; box-sizing: border-box; top: 0; right: 0; bottom: 0; left: 0; height: 100%; }
 
-		.notes_interface nav.list .listbox { z-index: 4; position: absolute; top: 36px; bottom: 0; background-color: #f1f1f1; border-right: 1px solid #ddd; overflow: auto; }
+		.notes_interface nav.list .listbox { z-index: 4; position: absolute; top: 36px; bottom: 26px; left: 0; right: 0; background-color: #f1f1f1; overflow: auto; }
 			.notes_interface nav.list article { background-color: #e7e7e7; cursor: pointer; border-bottom: 1px solid #ddd; }
 			.notes_interface nav.list article:nth-child(odd) { background-color: #f1f1f1; }
 			.notes_interface nav.list article:hover h3 { background-image: linear-gradient(to bottom, rgba(255, 255, 0, 0), rgba(255, 255, 0, .2)); }
 			.notes_interface nav.list article.highlight h3 { background-image: linear-gradient(to bottom, #74bae8, #367cc0); color: white; }
 				.notes_interface nav.list article h3 { font-size: 12px; font-weight: bold; margin: 0; padding: 3px 7px; }
 
+		.notes_interface nav.list .item_control { position: absolute; height: 25px; right: 0; left: 0; bottom: 0; border-top: 1px solid #ddd; }
+
 
 	.notes_interface section.editor { position: absolute; bottom: 0; }
-		.notes_interface #editor { position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: 0; display: block; width: 100%; resize: none; color: black; border: 0; background-color: #f1f1f1; }
+		.notes_interface #editor { position: absolute; top: 0; right: 0; bottom: 26px; left: 0; margin: 0; display: block; width: 100%; resize: none; color: black; border: 0; background-color: #f1f1f1; }
+		.notes_interface section.editor .statusbar { position: absolute; height: 25px; right: 0; bottom: 0; left: 0; border-top: 1px solid #ddd; }
+			.notes_interface section.editor .statusbar p { line-height: 25px; font-size: 11px; color: #666; }
+
+			.notes_interface section.editor .statusbar .ticker { padding: 0 7px; }
 
 @media screen and (max-width: 640px) { /* Phones */
 	html,
@@ -69,7 +77,7 @@ html, body { margin: 0; padding: 0; }
 }
 
 @media screen and (min-width: 640px) { /* Tablet and above */
-	.notes_interface nav.list .listbox { width: 200px; left: 0; }
+	.notes_interface nav.list .sidebar { width: 200px; left: 0; }
 	.notes_interface section.editor { left: 205px; right: 0; top: 36px; border-left: 1px solid #ddd; }
 }
 

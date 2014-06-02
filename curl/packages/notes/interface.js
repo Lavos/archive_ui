@@ -1,10 +1,10 @@
 define([
 	'jquery', 'underscore', 'doubleunderscore', 'blocks',
-	'text!./main.jst', 'text!./list.jst', 'text!./item.jst', 'text!./editor.jst',
+	'text!./list.jst', 'text!./item.jst', 'text!./editor.jst',
 	'css!./interface.css'
 ], function(
 	$, _, __, Blocks,
-	main_template_string, list_template_string, item_template_string, editor_template_string
+	list_template_string, item_template_string, editor_template_string
 ){
 	var Note = Blocks.Model.inherits(function(){
 		this.data = {
@@ -47,10 +47,6 @@ define([
 			{ event_name: 'input', selector: '.search', function_name: 'search' },
 			{ event_name: 'keydown', selector: '.search', function_name: 'key_handler' }
 		],
-
-		close_menu: function(){
-			$('html').removeClass('menu_open');
-		},
 
 		render: function(){
 			this.items = [];
@@ -212,20 +208,13 @@ define([
 	var Editor = Blocks.View.inherits(function(){
 		this.model = new Note();
 
-		this.textarea = document.createElement('textarea');
-		this.element.appendChild(this.textarea);
-		this.textarea.id = 'editor';
-		this.$textarea = $(this.textarea);
-
-		this.$info = this.$element.find('span.info');
-
-		this.render();
+		this.element.innerHTML = editor_template_string;
+		this.$textarea = this.$element.find('textarea');
 	}, {
 		content_timer: null,
 		tag_name: 'section',
 		element_classes: 'editor pane',
-		comp_template: __.template(editor_template_string),
-
+		
 		events: [
 			{ event_name: 'input', selector: 'textarea', function_name: 'content_handler' },
 		],
@@ -237,11 +226,10 @@ define([
 				this.save();
 			};
 
-			this.$info.html('');
 			this.$textarea.val('');
 		},
 
-		display_revision: function (hex) {
+		display_revision: function(hex){
 			var self = this;
 
 			$.ajax({
@@ -254,7 +242,7 @@ define([
 			});
 		},
 
-		content_handler: function () {
+		content_handler: function(){
 			var self = this;
 
 			if (this.content_timer) {
@@ -264,7 +252,6 @@ define([
 			this.content_timer = setTimeout(function(){
 				self.content_timer = null;
 				self.save();
-				self.once('save', function(){ self.render(); });
 			}, 2000);
 		},
 
@@ -321,87 +308,20 @@ define([
 	});
 
 	var Interface = Blocks.View.inherits(function(){
-		this.element.innerHTML = main_template_string;
-
 		this.editor = new Editor();
 		this.list = new List();
 
-		// this.list.on('select', this.watch, this);
 		this.list.on('select', this.editor.edit, this.editor);
 		this.list.on('leave', this.editor.edit, this.editor);
-
-		// this.editor.on('save', this.update_revisions, this);
 
 		this.element.appendChild(this.list.element);
 		this.element.appendChild(this.editor.element);
 
-		this.$revisions = this.$element.find('select.revisions');
-
-		this.context = null;
+		this.list.search();	
+		this.list.$search.focus();
 	}, {
 		element_classes: 'notes_interface',
-
-		events: [
-			{ event_name: 'click', selector: '[data-action="menu"]', function_name: 'menu' },
-			{ event_name: 'change', selector: 'select.revisions', function_name: 'select_revision' }
-		],
-
-		watch: function(item, model) {
-			if (this.context) {
-				this.context.off('change', this.update_revisions);
-			};
-
-			this.context = model;
-			this.context.on('change', this.update_revisions, this);
-			
-			var revs = this.context.get('revision_refs'), counter = revs.length;
-			var last = revs[revs.length-1];
-
-			if (last) {
-				this.editor.display_revision(last);
-			};
-
-			this.update_revisions();
-		},
-
-		update_revisions: function() {
-			console.log('update!');
-
-			var revs = this.context.get('revision_refs'), counter = revs.length;
-			var last = revs[revs.length-1];
-			this.$revisions.html('');
-
-			if (last) {
-				var frag = document.createDocumentFragment();
-
-				while (counter--) {
-					var option = document.createElement('option');
-					var current = revs[counter];
-
-					option.value = current;
-					option.innerHTML = current.substr(0, 7);
-
-					if (current === last) {
-						option.selected = true;
-					};
-
-					frag.appendChild(option);
-				};
-
-				this.$revisions.append(frag);
-			};
-		},
-
-		select_revision: function() {
-			console.log('SELECT');
-			this.editor.display_revision(this.$revisions.val());
-		},
-
-		menu: function(){
-			$('html').toggleClass('menu_open');
-		}
 	});
-
 
 	return Interface;
 });

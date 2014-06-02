@@ -13,10 +13,13 @@
 	<div id="master"></div><!-- /#master -->
 
 	<script type="text/javascript">
+	var start = new Date();
+
 		curl(['notes']).then(function(Notes){
 			var n = new Notes();
 			document.getElementById('master').appendChild(n.element);
-			console.dir(n);
+
+			console.log((new Date() - start) + 'ms, new Notes Interface');	
 		});		
 	</script>
 </body>
